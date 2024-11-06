@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Outside Game II</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #levelText {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #levelImage {
+            margin: 20px 0;
+            max-width: 100%;
+            height: auto;
+        }
+        #passwordInput {
+            font-size: 18px;
+            padding: 5px;
+            width: 250px;
+            text-align: center;
+        }
+        #checkButton {
+            font-size: 18px;
+            padding: 5px 10px;
+            margin-top: 10px;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .summary {
+            color: blue;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Outside Game II</h1>
+    <div id="levelText"></div>
+    <img id="levelImage" style="display: none;">
+    <input type="text" id="passwordInput" placeholder="Enter password here">
+    <button id="checkButton">Check</button>
+    <div id="result"></div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
