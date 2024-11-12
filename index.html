@@ -20,11 +20,6 @@
             font-size: 24px;
             margin-bottom: 20px;
         }
-        #levelImage {
-            margin: 20px 0;
-            max-width: 100%;
-            height: auto;
-        }
         #passwordInput {
             font-size: 18px;
             padding: 5px;
@@ -51,11 +46,113 @@
 <body>
     <h1>Game Outside Game II</h1>
     <div id="levelText"></div>
-    <img id="levelImage" style="display: none;">
     <input type="text" id="passwordInput" placeholder="Enter password here">
     <button id="checkButton">Check</button>
     <div id="result"></div>
     
-    <script src="script.js"></script>
+    <script>
+        const levels = [
+            { 
+                description: "เธอคือใคร?", 
+                validPasswords: [
+                    "นัทธมน แดงบัว", "พศิน พงษ์วัชรารักษ์", "ปพัฐร์ภิตา ยังสำราญชัย", "ฐานวีร์ ศรีไพโรจน์",
+                    "นรวรรธน์ ปึ่ง", "ปัณณวัฒน์ ขวัญแก้ว", "จิณห์นิภา ว่องดี", "มานิตา อดิเรกโชติกุล",
+                    "ธนกฤต มีศิริ", "กันต์นภนต์ ทักษิณา", "สหรัถ เมย์เยอร์", "ภาคิน ศรีบุรินทร์",
+                    "รุจา นะลำเลียง", "กรวีร์ ทักษิณา", "อินทัช สุธนะดิลก", "นัทธมน บุญชำนาญ",
+                    "ลลิตภัทร กรงกรด", "ศิวกรณ์ ชัยสาลี", "ธัญญรัตน์ กังสมัครศิลป์", "ณัฐกานต์ กิตติเรืองทอง",
+                    "กวิตา กาญจนาพฤกษ์", "ภาวัต สวัสดิ์กำธร", "กนกขวัญ จิตรนาศิลป์"
+                ] 
+            },
+            { description: "NOW", password: "current time" },
+            { description: "HERE ON EARTH", pattern: /^13°52'(\d{2})\"N 100°42'(\d{2})\"E$/, range: { aMin: 32, aMax: 44, bMin: 29, bMax: 41 } }
+        ];
+
+        const attempts = Array(levels.length).fill(0);
+        let currentLevel = 0;
+
+        function updateLevelText() {
+            document.getElementById("levelText").textContent = `LEVEL ${currentLevel + 1}: ${levels[currentLevel].description}`;
+            document.getElementById("passwordInput").style.display = "block";
+        }
+
+        updateLevelText();
+
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        document.getElementById("checkButton").addEventListener("click", function() {
+            document.getElementById("result").textContent = '';
+            let userInput = document.getElementById("passwordInput").value;
+
+            if (currentLevel === 0) {
+                if (levels[currentLevel].validPasswords.includes(userInput)) {
+                    document.getElementById("result").textContent = `ผ่าน LEVEL ${currentLevel + 1} แล้ว! คุณตอบผิดไปทั้งหมด ${attempts[currentLevel]} ครั้ง`;
+                    document.getElementById("result").className = 'correct';
+                    currentLevel++;
+                    updateLevelText();
+                } else {
+                    attempts[currentLevel]++;
+                    document.getElementById("result").textContent = `รหัสผ่านผิด! คุณตอบผิดไปแล้ว ${attempts[currentLevel]} ครั้ง`;
+                    document.getElementById("result").className = 'incorrect';
+                }
+            } else if (currentLevel === 1) {
+                const currentTime = getCurrentTime();
+                if (userInput === currentTime) {
+                    document.getElementById("result").textContent = `ผ่าน LEVEL ${currentLevel + 1} แล้ว! คุณตอบผิดไปทั้งหมด ${attempts[currentLevel]} ครั้ง`;
+                    document.getElementById("result").className = 'correct';
+                    currentLevel++;
+                    updateLevelText();
+                } else {
+                    attempts[currentLevel]++;
+                    document.getElementById("result").textContent = `รหัสผ่านผิด! คุณตอบผิดไปแล้ว ${attempts[currentLevel]} ครั้ง`;
+                    document.getElementById("result").className = 'incorrect';
+                }
+            } else if (currentLevel === 2) {
+                const match = userInput.match(levels[currentLevel].pattern);
+                
+                if (match) {
+                    const a = parseInt(match[1]);
+                    const b = parseInt(match[2]);
+                    const { aMin, aMax, bMin, bMax } = levels[currentLevel].range;
+
+                    if (a >= aMin && a <= aMax && b >= bMin && b <= bMax) {
+                        document.getElementById("result").textContent = `ผ่าน LEVEL ${currentLevel + 1} แล้ว! คุณตอบผิดไปทั้งหมด ${attempts[currentLevel]} ครั้ง`;
+                        document.getElementById("result").className = 'correct';
+                        currentLevel++;
+                        updateLevelText();
+                    } else {
+                        attempts[currentLevel]++;
+                        document.getElementById("result").textContent = `พิกัดไม่ถูกต้อง! คุณตอบผิดไปแล้ว ${attempts[currentLevel]} ครั้ง`;
+                        document.getElementById("result").className = 'incorrect';
+                    }
+                } else {
+                    attempts[currentLevel]++;
+                    document.getElementById("result").textContent = `รูปแบบพิกัดไม่ถูกต้อง! คุณตอบผิดไปแล้ว ${attempts[currentLevel]} ครั้ง`;
+                    document.getElementById("result").className = 'incorrect';
+                }
+            }
+
+            if (currentLevel === levels.length) {
+                let totalAttempts = attempts.reduce((sum, attempts) => sum + attempts, 0);
+                let summary = "จำนวนครั้งที่ตอบผิดในแต่ละ LEVEL:<br>";
+                for (let i = 0; i < attempts.length; i++) {
+                    summary += `LEVEL ${i + 1}: ${attempts[i]} ครั้ง<br>`;
+                }
+                summary += `<br>รวมทั้งหมด: ${totalAttempts} ครั้ง`;
+                document.getElementById("result").innerHTML = summary;
+                document.getElementById("result").className = 'summary';
+
+                document.getElementById("passwordInput").style.display = "none";
+                document.getElementById("checkButton").style.display = "none";
+                document.getElementById("levelText").style.display = "none";
+            }
+
+            document.getElementById("passwordInput").value = '';
+        });
+    </script>
 </body>
 </html>
